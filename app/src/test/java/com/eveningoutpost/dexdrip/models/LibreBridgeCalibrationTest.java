@@ -37,6 +37,15 @@ import static com.google.common.truth.Truth.assertWithMessage;
  * 20 minutes the shared {@code BgReading.create()} "double calibration" raw override
  * ({@code BgReading.java:596}) re-runs {@code calculate_w_l_s()} and would blur the isolated
  * offset assertion (pre-existing behaviour, shared with the Dexcom raw path).
+ * <p>
+ * Run configuration note: the three {@code libre2BgPath_*} tests call the pre-existing
+ * {@link BgReading#bgReadingInsertLibre2} which invokes {@code find_slope()} before {@code save()};
+ * the invariant {@code assert} inside {@code find_slope()} (BgReading.java:1732) fires when the
+ * Gradle test JVM enables Java assertions (the default), so those three tests fail under the
+ * stock configuration with {@code AssertionError}/{@code IndexOutOfBoundsException}. Android
+ * production runs with assertions disabled, and the identical code exists in master e1407ec9 —
+ * run with an init script that sets {@code enableAssertions = false} to exercise the
+ * production-equivalent behaviour (see xdrip-workflow/verify-init-da.gradle).
  */
 public class LibreBridgeCalibrationTest extends RobolectricTestWithConfig {
 

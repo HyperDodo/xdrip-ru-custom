@@ -49,7 +49,8 @@ public class LibreOOPAlgorithmTest extends RobolectricTestWithConfig {
     /** C1: the new type is a distinct enum constant (it must NOT be an alias of Libre2). */
     @Test
     public void libre2Gen2_isDistinctConstantWithValue7() {
-        assertThat(SensorType.Libre2Gen2).isNotEqualTo(SensorType.Libre2);
+        assertWithMessage("Libre2Gen2 must not be an alias of Libre2")
+                .that(SensorType.Libre2Gen2).isNotEqualTo(SensorType.Libre2);
         assertWithMessage("new constant keeps the design value 7")
                 .that(SensorType.Libre2Gen2.value).isEqualTo(7);
         // existing constants must not have been renumbered by the addition
@@ -139,6 +140,12 @@ public class LibreOOPAlgorithmTest extends RobolectricTestWithConfig {
     private static void assertSensorType(int[] patchInfo, SensorType expected, String description) {
         assertWithMessage(description)
                 .that(LibreOOPAlgorithm.getSensorType(asBytes(patchInfo)))
+                .isEqualTo(expected);
+    }
+
+    private static void assertSensorType(byte[] patchInfo, SensorType expected, String description) {
+        assertWithMessage(description)
+                .that(LibreOOPAlgorithm.getSensorType(patchInfo))
                 .isEqualTo(expected);
     }
 
