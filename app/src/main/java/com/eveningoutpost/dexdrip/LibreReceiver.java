@@ -87,7 +87,7 @@ public class LibreReceiver extends BroadcastReceiver {
                                         val glucose = item.getDouble("glucoseValue");
                                         val timestamp = item.getLong("timestamp");
                                         if (d) UserError.Log.d(TAG, "Real time item: " + JoH.dateTimeText(timestamp) + " value: " + Unitized.unitized_string_static(glucose));
-                                        BgReading.bgReadingInsertFromInt((int) Math.round(glucose), timestamp, timeslice, false, LIBRE_SOURCE_INFO);
+                                        LibreAlarmReceiver.insertLibreBridgeBg((int) Math.round(glucose), timestamp, timeslice, false);
                                     }
 
                                 } catch (Exception e) {
@@ -106,7 +106,15 @@ public class LibreReceiver extends BroadcastReceiver {
                                         g.glucoseLevel = g.glucoseLevelRaw;
                                         gd.add(g);
                                     }
-                                    LibreAlarmReceiver.insertFromHistory(gd, false);
+                                    if (LibreAlarmReceiver.applyCalibrationToBridgeData()) {
+                                        // glucose-scale history values: apply xDrip calibration like realtime data
+                                        for (GlucoseData g : gd) {
+                                            LibreAlarmReceiver.insertLibreBridgeBg(g.glucoseLevel, g.realDate,
+                                                    DexCollectionType.getCurrentDeduplicationPeriod(), true);
+                                        }
+                                    } else {
+                                        LibreAlarmReceiver.insertFromHistory(gd, false);
+                                    }
 
                                 } catch (Exception e) {
                                     UserError.Log.e(TAG, "Got exception processing history: " + e);

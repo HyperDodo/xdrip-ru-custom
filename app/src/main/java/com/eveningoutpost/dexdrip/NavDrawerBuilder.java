@@ -72,7 +72,12 @@ public class NavDrawerBuilder {
             // Only if the collector can start/stop sensor and submit calibrations (is not passive)
 
             if (is_active_sensor) {
-                if (!CollectionServiceStarter.isBTShare(context)) {
+                if (DexCollectionType.isLibreCalibrationEnabled(collector)) {
+                    // Libre sources (LibreReceiver bridge / LibreAlarm OOP2) are not transmitter based,
+                    // so the Dexcom initial/double calibration gating below does not apply to them.
+                    this.nav_drawer_options.add(context.getString(R.string.add_calibration));
+                    this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
+                } else if (!CollectionServiceStarter.isBTShare(context)) {
                     if (last_two_bgReadings.size() > 1 || Ob1G5CollectionService.isG5WantingCalibration()) {
                         if ((last_two_calibrations.size() > 1) && !Ob1G5CollectionService.isG5WantingInitialCalibration()) { // After two successful initial calibrations
                             // TODO tighten this time limit

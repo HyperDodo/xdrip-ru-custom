@@ -209,6 +209,17 @@ public enum DexCollectionType {
                         Pref.getString("calibrate_external_libre_2_algorithm_type", "calibrate_raw").equals("no_calibration"));
     }
 
+    // Should xDrip (non-native) calibrations be applied to values coming from Libre data sources?
+    // true when the collector is Libre based and the user has not selected "no calibration"
+    // (and OOP2 decoding is not delegated to an external algorithm)
+    public static boolean isLibreCalibrationEnabled(DexCollectionType collector) {
+        return hasLibre(collector) && !isLibreOOPNonCalibratebleAlgorithm(collector);
+    }
+
+    public static boolean isLibreCalibrationEnabled() {
+        return isLibreCalibrationEnabled(getDexCollectionType());
+    }
+
     public static Class<?> getCollectorServiceClass() {
         return getCollectorServiceClass(getDexCollectionType());
     }
