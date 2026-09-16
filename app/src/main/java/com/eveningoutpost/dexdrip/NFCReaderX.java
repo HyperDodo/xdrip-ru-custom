@@ -682,6 +682,12 @@ public class NFCReaderX {
 
                         SensorType sensorType = LibreOOPAlgorithm.getSensorType(patchInfo);
                         Log.uel(TAG, "Libre sensor of type " + sensorType.name() + " detected.");
+                        if (sensorType == SensorType.Libre2Gen2) {
+                            Log.ueh(TAG, "Libre 2 Gen2 (RU / eastern region) sensor detected by NFC scan. This sensor generation cannot be read directly by xDrip. Use a bridge app (Juggluco with 'Patched Libre' broadcast, or Diabox) with the 'Libre2 Patched' data source; calibrations then work in xDrip.");
+                            JoH.static_toast_long(gs(R.string.libre2_gen2_not_supported_use_bridge));
+                            vibrate(context, 3);
+                            return null;
+                        }
                         if (sensorType == SensorType.Libre3) {
                             Libre3.parsePatchInfo(patchInfo);
                         }
