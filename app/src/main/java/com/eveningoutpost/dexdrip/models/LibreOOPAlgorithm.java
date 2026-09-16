@@ -57,7 +57,8 @@ public class LibreOOPAlgorithm {
         Libre2(3),
         LibreProH(4),
         Libre2Plus(5),
-        Libre3(6);
+        Libre3(6),
+        Libre2Gen2(7);   // Russian region ("Eastern / Rest of World") FreeStyle Libre 2 Gen2 sensors
 
         int value;
 
@@ -296,6 +297,13 @@ public class LibreOOPAlgorithm {
         }
         if (SensorInfo.length == 24) {
             return SensorType.Libre3;
+        }
+        // Libre 2 Gen2 sensors (e.g. Russian region 2B 0A 39 08) use a new encryption generation
+        // which xDrip cannot decode. Identify them distinctly so no Libre1/Libre2 fallback
+        // logic ever misinterprets them (see DiaBLE DiaBLE/Libre.swift:15-18, 68-73).
+        final int family = SensorInfo[0] & 0xff;
+        if (family == 0x2b || family == 0x2c || family == 0x76) {
+            return SensorType.Libre2Gen2;
         }
         int SensorNum = (SensorInfo[0] & 0xff) << 16 | (SensorInfo[1] & 0xff) << 8 | SensorInfo[2];
         switch (SensorNum) {
