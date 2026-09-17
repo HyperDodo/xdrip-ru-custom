@@ -1,57 +1,68 @@
-# Nightscout xDrip
-> Enhanced personal research version of xDrip
+# xDrip+ RU custom: FreeStyle Libre 2 (Gen2 / RU) + калибровки
 
- <img align="right" src="Documentation/images/download-xdrip-plus-qr-code.png">
- Info page and APK download: https://jamorham.github.io/#xdrip-plus
+Кастомная сборка [xDrip+](https://github.com/NightscoutFoundation/xDrip) для сенсоров **FreeStyle Libre 2 российского региона (Gen2)**, которые работают через мост Juggluco, плюс рабочие калибровки для Libre.
 
-<img align="right" src="https://travis-ci.org/jamorham/xDrip-plus.svg?branch=master"><a align="right" title="Crowdin" target="_blank" href="https://crowdin.com/project/xdrip"><img align="right" src="https://badges.crowdin.net/xdrip/localized.svg"></a>
+Если коротко: xDrip сам Gen2 читать не умеет (у этого поколения сенсоров новая криптография, открытой реализации нет). Сенсор читает Juggluco, а эта сборка xDrip принимает его данные и даёт график, тревоги, калибровки и выгрузку.
 
-## Features
-* Voice, Keypad or Watch input of Treatments (Insulin/Carbs/Notes)
-* Visualization of Insulin and Carb action curves + Undo/Redo
-* Improved alerts and predictive low forecasting feature
-* Instant data synchronization between phones and tablets
-* Support for many different data sources
-* Published by the Nightscout Foundation
+## Что добавлено к стоку
 
- <img align="middle" src="https://jamorham.github.io/images/jamorham-natural-language-treatments-two-web.png">
+1. **Распознавание Gen2** (ветка `ru-gen2`): сенсоры Gen2 (RU / Eastern / ROW, семейства `0x2b / 0x2c / 0x76`) распознаются как отдельный тип, и NFC-скан такого сенсора завершается понятным сообщением (используйте мост Juggluco) вместо ошибочного "libre1 failsafe".
+2. **Калибровки для Libre** (ветка `libre2-calibration`): пункт "Add Calibration" доступен в меню для Libre-источников и применяется ко всем путям данных источника "Libre2 Patched" (включая scan/history, которые в стоке калибровку игнорировали). Калибровка Libre только смещением: наклон 1, смещение в пределах -40..+20 mg/dL (так устроено в xDrip, это не ограничение сборки).
 
-## What does it do?
+Dexcom и нативные пути не затронуты; путь Libre 2 EU работает как в стоке.
 
-xDrip is an unofficial and independent Android app which works as data hub and processor between many different devices.
+## Скачать и установить
 
-It supports wireless connections to G6, G7, Medtrum A6, Libre via NFC and Bluetooth, 630G, 640G, 670G pumps, CareSens Air and Eversense CGM via companion apps. Bluetooth Glucose Meters such as the Contour Next One, AccuChek Guide, Verio Flex & Diamond Mini as well as devices like the Pendiq 2.0 Insulin Pen.
+APK: [последний релиз](https://github.com/HyperDodo/xdrip-ru-custom/releases/latest)
 
-Heart-rate and step counter data is processed from Android Wear, Garmin, Fitbit and Pebble smart-watches and watch-faces for those that show glucose values and graphs.
+- файл `xdrip-ru-gen2-calibration.apk`, sha256 `8dcb4973252392c749385498e6199eebe2d4fca638ff972d6198c38bc6f4d5cb`
+- versionName `718d082-ru-custom-2026.09.16`
+- подписан локальным ключом: поверх официального xDrip+ не установится. Если нужна история, сделай в старом приложении Export DB, а в новом после установки Import DB.
 
-On some Android Wear watches, it is possible for the G6 to talk directly to the watch so it can display values even when out of range of the phone.
+Пошагово (Gen2 RU):
 
-The app contains sophisticated charting, customization and data entry features as well as a predictive simulation model.
+1. Удали официальный xDrip+ (подписи разные, иначе Android откажет).
+2. Установи APK, разреши установку из неизвестных источников.
+3. Выдай xDrip и Juggluco разрешения: уведомления, "Устройства поблизости" (Bluetooth), и поставь "без ограничений" в настройках батареи для обоих приложений.
+4. Juggluco (juggluco.nl): подключи сенсор (один NFC-скан), включи трансляцию "Patched Libre", на запрос пакета укажи `com.eveningoutpost.dexdrip`.
+5. xDrip: источник данных "Libre2 Patched", затем меню -> Start sensor -> ответь "Not today".
+6. Через пару минут появятся показания. Калибровка: меню -> Add Calibration.
 
-Instant two-way synchronization is possible by linking follower handsets, data can also be uploaded and downloaded to a Nightscout web service or uploaded directly to Tidepool, MongoDB or InfluxDB.
+Полная инструкция со всеми деталями и решением проблем: **[docs/GUIDE.md](docs/GUIDE.md)**.
 
-Customization allows for different options to configure alarms, vocalize readings, change the display preferences etc. International users can update translations from within the app too.
+## Ветки
 
-Your data is yours and can be exported in many different ways. xDrip also intercommunicates with other apps, for example sending and receiving live data with AndroidAPS.
+- `ru-custom`: дефолтная. Финальная сборка, оба патча влиты. Тег `ru-custom-2026.09.16` указывает на коммит, из которого собран APK (`718d082`).
+- `ru-gen2`: патч распознавания Gen2 отдельно.
+- `libre2-calibration`: патч калибровок отдельно.
+- `verify-tests`: unit-тесты (20/20 в production-equivalent режиме).
+- `master`: база, NightscoutFoundation/xDrip @ `e1407ec` (Sep 2026).
 
+## Документация
 
-## Ethos
-* Developed using Rapid Prototyping methodology
-* Immediate results favoured to prove concepts
-* Designed to support my personal research goals
-* User Choice always a high priority
-* No registration or Internet access required
-* Community testing and collaboration appreciated!
+- [docs/GUIDE.md](docs/GUIDE.md): полный гайд (установка, Juggluco, калибровки, AAPS, решение проблем).
+- [docs/INSTALL-AND-SETUP.md](docs/INSTALL-AND-SETUP.md): исходная инструкция по установке и настройке.
+- [docs/verification-report.md](docs/verification-report.md): отчёт независимой верификации.
+- [docs/PATCHES.txt](docs/PATCHES.txt): список изменённых файлов.
 
-## Roadmap
-* Calibration improvements
-* Supporting the large family of devices
-* Increasing automation and data backup and sync options
-* More Nightscout and APS integration
+## Сборка из исходников
 
-## Collaboration
-We are very happy if people want to collaborate with this project. Please contact us at [Discussions](https://github.com/NightscoutFoundation/xDrip/discussions) if you want to get involved and study the [collaboration guidelines](CONTRIBUTING.md) before submitting any patches or pull requests.
+Требования: JDK 17 и Android SDK (platform 34, build-tools 35 или 36).
 
-## Thanks
-None of this would be possible without all the hard work of the xDrip and Nightscout communities who have developed such excellent software and allowed us to build upon it.
+```
+./gradlew.bat :app:assembleDebug            # Windows
+./gradlew :app:assembleDebug                # Linux / macOS
+```
 
+Release: `:app:assembleProdRelease` (подпись настраивается через untracked `app/local.gradle`). Первая сборка занимает около 13 минут.
+
+## Оговорки
+
+- DIY-сборка, не медицинское изделие. Не связана с Abbott. Подтверждай показания глюкометром, особенно на низких значениях.
+- Gen2 не читается напрямую и не будет без открытой реализации протокола; без Juggluco эта сборка для Gen2 бесполезна.
+- Живой end-to-end прогон на реальном сенсоре не выполнялся (в среде сборки сенсора не было); проверка была по коду, тестам и содержимому APK.
+- Лицензия: GPLv3. Оригинальный код принадлежит Nightscout Foundation и контрибьюторам xDrip+.
+
+## English TL;DR
+
+Custom xDrip+ build for FreeStyle Libre 2 Gen2 (Russian region) sensors. xDrip cannot read Gen2 directly (new crypto, no open implementation), so data comes from the Juggluco "Patched Libre" broadcast into the "Libre2 Patched" data source. This build adds clean Gen2 detection (clear message instead of a failed read) and makes user calibrations reachable and effective for Libre data (offset-only: slope 1, offset clamped to -40..+20 mg/dL). APK in Releases; full guide (Russian) in docs/GUIDE.md. GPLv3, DIY use only, not affiliated with Abbott.

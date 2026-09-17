@@ -1,0 +1,31 @@
+# Custom xDrip+ build: source changes and provenance
+
+Base: NightscoutFoundation/xDrip master e1407ec9a8ab20bc3f56315daf8cfc8913e12735 (2026-09-09)
+Patches: branch ru-gen2 (Libre 2 Gen2 RU recognition), branch libre2-calibration (calibrations reachable+effective), branch ru-custom (integration), branch verify-tests (unit tests)
+
+== integration branch log ==
+718d082 merge libre2-calibration (calibrations reachable + effective for Libre 2)
+6d6720f libre2-calibration: make user calibrations reachable and effective for Libre 2 data sources
+044edb2 merge ru-gen2 (Libre 2 Gen2 RU recognition + bridge guidance)
+9879821 ru-gen2: replace em dash in RU notification string with colon
+4202311 ru-gen2: identify Libre 2 Gen2 (RU/ROW) sensors distinctly + guide users to bridge
+
+== diff stat vs master ==
+ .../eveningoutpost/dexdrip/LibreAlarmReceiver.java | 29 ++++++++++++++++++++++
+ .../com/eveningoutpost/dexdrip/LibreReceiver.java  | 12 +++++++--
+ .../com/eveningoutpost/dexdrip/NFCReaderX.java     |  6 +++++
+ .../eveningoutpost/dexdrip/NavDrawerBuilder.java   |  7 +++++-
+ .../dexdrip/models/LibreOOPAlgorithm.java          | 10 +++++++-
+ .../dexdrip/utils/DexCollectionType.java           | 11 ++++++++
+ app/src/main/res/values-ru/strings-ru.xml          |  1 +
+ app/src/main/res/values/strings.xml                |  1 +
+ .../dexdrip/models/LibreOOPAlgorithm.java          | 10 +++++++-
+ 9 files changed, 82 insertions(+), 5 deletions(-)
+
+== verification test commits ==
+b16a0bc verify-tests: fix test compile (byte[] overload, assertWithMessage); document find_slope -ea caveat
+664aa7d verify-tests: unit tests for Libre2 Gen2 mapping and bridge calibration
+718d082 merge libre2-calibration (calibrations reachable + effective for Libre 2)
+
+== APK ==
+xdrip-ru-gen2-calibration.apk  sha256 8dcb4973252392c749385498e6199eebe2d4fca638ff972d6198c38bc6f4d5cb  versionName 718d082-ru-custom-2026.09.16
